@@ -2,7 +2,8 @@ import json
 import os
 import unittest
 
-from wiktionaryparser.parser import WiktionaryParser
+from wiktionaryparserru.parser import WiktionaryParser
+from wiktionaryparserru.utils import ResponseCode
 
 __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 

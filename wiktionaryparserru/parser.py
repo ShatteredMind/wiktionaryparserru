@@ -1,16 +1,9 @@
-from enum import Enum
 import re
 
 from bs4 import BeautifulSoup
 import requests
 
-
-class ResponseCodes(Enum):
-    SUCCESS = 200
-    BAD_REQUEST = 400
-    NOT_FOUND = 404
-    INTERNAL_SERVER_ERROR = 500
-    BAD_GATEWAY = 502
+from wiktionaryparserru.utils import ResponseCode, STATUSES
 
 
 class WiktionaryParser:
@@ -26,7 +19,7 @@ class WiktionaryParser:
     def _set_morphology(self, soup: BeautifulSoup) -> None:
         morph_title = soup.find(id=self.MORPHOLOGY_ID)
         morph_text = morph_title.find_next("p").find_next("p").get_text()
-        morph_text = "".join(re.findall("[-0-9А-я.,! ]+", morph_text))
+        morph_text = "".join(re.findall("[-0-9А-яё.,! ]+", morph_text))
         self.result["morphology"] = morph_text
 
     def _set_definitions(self, soup: BeautifulSoup) -> None:
@@ -37,11 +30,11 @@ class WiktionaryParser:
         for item in definition_text.find_all("li"):
             text = item.get_text()
             if text:
-                text = "".join(re.findall("[-◆0-9А-я.,! ]+", text))
+                text = "".join(re.findall("[-◆А-яё.,! ]+", text))
                 text_split = text.split(self.SEMANTICS_SPLIT_SYMBOL)
                 self.result["definitions"].append({
-                    "value": text_split[0],
-                    "example": text_split[1]
+                    "value": text_split[0].strip(),
+                    "example": text_split[1].strip()
                 })
 
     def _set_synonyms(self, soup: BeautifulSoup) -> None:
@@ -50,9 +43,8 @@ class WiktionaryParser:
         synonyms_text = semantic_title.find_next("ol").find_next("ol")
 
         for item in synonyms_text.find_all("li"):
-            text = item.get_text()
+            text = " ".join(re.findall("[-0-9А-яё.,! ]+", item.get_text())).strip()
             if text and text != self.MISSING_SYMBOL:
-                text = "".join(re.findall("[-0-9А-я.,! ]+", text))
                 self.result["synonyms"].append(text)
 
     def _set_antonyms(self, soup: BeautifulSoup) -> None:
@@ -61,9 +53,8 @@ class WiktionaryParser:
         synonyms_text = semantic_title.find_next("ol").find_next("ol").find_next("ol")
 
         for item in synonyms_text.find_all("li"):
-            text = item.get_text()
+            text = " ".join(re.findall("[-0-9А-яё.,! ]+", item.get_text())).strip()
             if text and text != self.MISSING_SYMBOL:
-                text = "".join(re.findall("[-0-9А-я.,! ]+", text))
                 self.result["antonyms"].append(text)
 
     def process_html_page(self, page: str) -> dict:
@@ -76,6 +67,8 @@ class WiktionaryParser:
 
     def make_request(self, word: str) -> dict:
         response = requests.get(self.url.format(word))
-        if response.status_code == ResponseCodes.SUCCESS.value:
+        if response.status_code == ResponseCode.SUCCESS.value:
             return self.process_html_page(response.text)
+        # might throw exception if code is missing
+        self.result = {**self.result, **STATUSES[response.status_code]}
         return self.result
