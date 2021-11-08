@@ -1,6 +1,6 @@
-### Russian Wiktionary Parser
-A little python library to fetch words' data from russian wiktionary in json format
-#### Example output for "любовь"
+### Парсер Русского Викисловаря
+Небольшой модуль, который позволяет получить морфологические свойства, значения, синонимы и антонимы слов с https://ru.wiktionary.org/
+#### Пример респонса для слова "любовь"
 ```json
 {
    "morphology":"Существительное, неодушевлённое, женский род, 3-е склонение тип склонения 8 по классификации А.А.Зализняка.",

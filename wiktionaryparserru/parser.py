@@ -1,16 +1,9 @@
-from enum import Enum
 import re
 
 from bs4 import BeautifulSoup
 import requests
 
-
-class ResponseCodes(Enum):
-    SUCCESS = 200
-    BAD_REQUEST = 400
-    NOT_FOUND = 404
-    INTERNAL_SERVER_ERROR = 500
-    BAD_GATEWAY = 502
+from wiktionaryparserru.utils import ResponseCode, STATUSES
 
 
 class WiktionaryParser:
@@ -74,6 +67,8 @@ class WiktionaryParser:
 
     def make_request(self, word: str) -> dict:
         response = requests.get(self.url.format(word))
-        if response.status_code == ResponseCodes.SUCCESS.value:
+        if response.status_code == ResponseCode.SUCCESS.value:
             return self.process_html_page(response.text)
+        # might throw exception if code is missing
+        self.result = {**self.result, **STATUSES[response.status_code]}
         return self.result

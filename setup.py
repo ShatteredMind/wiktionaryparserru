@@ -4,7 +4,7 @@ setup(
     name='wiktionaryparserru',
     version='0.01',
     packages=['tests', 'wiktionaryparser'],
-    url='',
+    url='https://github.com/ShatteredMind/wiktionaryparserru',
     license='MIT',
     author='internethero',
     author_email='sashalekoncev@gmail.com',
