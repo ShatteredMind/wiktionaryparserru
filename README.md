@@ -49,3 +49,12 @@
    ]
 }
 ```
+#### Пример использования
+```python
+from wiktionaryparserru.parser import WiktionaryParser
+
+word = input()
+parser = WiktionaryParser()
+parsed_response = parser.make_request(word)
+print(parsed_response)
+```
