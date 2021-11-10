@@ -68,7 +68,7 @@ class WiktionaryParser:
     def make_request(self, word: str) -> dict:
         response = requests.get(self.url.format(word))
         if response.status_code == ResponseCode.SUCCESS.value:
-            return self.process_html_page(response.text)
+            return {**self.process_html_page(response.text), **STATUSES[response.status_code]}
         # might throw exception if code is missing
         self.result = {**self.result, **STATUSES[response.status_code]}
         return self.result
