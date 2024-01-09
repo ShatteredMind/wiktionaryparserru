@@ -32,6 +32,8 @@ class WiktionaryParser:
             if text:
                 text = "".join(re.findall("[-◆А-яё.,! ]+", text))
                 text_split = text.split(self.SEMANTICS_SPLIT_SYMBOL)
+                if len(text_split) == 1:
+                    text_split = [text, "Отсутствует пример употребления"]
                 self.result["definitions"].append({
                     "value": text_split[0].strip(),
                     "example": text_split[1].strip()
